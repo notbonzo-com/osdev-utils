@@ -7,7 +7,7 @@ The `toolchain.sh` is a script that simplifies setting up the ELF-GCC toolchain 
 
 **Quick install:**
 
-    curl -L https://raw.githubusercontent.com/entcfx/osdev-utils/main/toolchain.sh > ~/.toolchain.sh && chmod +x ~/.toolchain.sh && ~/.toolchain.sh && rm ~/.toolchain.sh
+    curl -L https://raw.githubusercontent.com/notbonzo/osdev-utils/main/toolchain.sh > ~/.toolchain.sh && chmod +x ~/.toolchain.sh && ~/.toolchain.sh && rm ~/.toolchain.sh
 
 Alternatively, you can download the `toolchain.sh` script and run it from your terminal.
 
@@ -25,7 +25,7 @@ The `fstruct.sh` script helps create the structure and build system for OS devel
 
 **Quick install:**
 
-    curl -L https://raw.githubusercontent.com/entcfx/osdev-utils/main/fstruct.sh > ~/.fstruct.sh && chmod +x ~/.fstruct.sh && ~/.fstruct.sh
+    curl -L https://raw.githubusercontent.com/notbonzo/osdev-utils/main/fstruct.sh > ~/.fstruct.sh && chmod +x ~/.fstruct.sh && ~/.fstruct.sh
 
 Alternatively, you can download the `fstruct.sh` script and run it from your terminal.
 
