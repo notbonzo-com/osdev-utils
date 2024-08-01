@@ -50,7 +50,7 @@ if [ "$language" == "2" ]; then
 fi
 
 if [ "$build_system" == "1" ]; then
-    case $project2 in
+    case $project in
         "limine")
             download_file "${MAKE_BASE_URL}/${project2}Root.make" "GNUmakefile"
             download_file "${MAKE_BASE_URL}/${project2}Kernel.make" "kernel/GNUmakefile"
