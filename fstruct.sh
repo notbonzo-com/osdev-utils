@@ -45,7 +45,7 @@ if [ "$use_linker" == "y" ]; then
     download_file "${LINKER_BASE_URL}/${project}-c++.ld" "kernel/cfg/linker.ld"
 fi
 
-if [ "$language" == "2" ]; thenx
+if [ "$language" == "2" ]; then
     project2="${project}Native"
 fi
 
