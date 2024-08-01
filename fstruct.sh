@@ -45,25 +45,25 @@ if [ "$use_linker" == "y" ]; then
     download_file "${LINKER_BASE_URL}/${project}-c++.ld" "kernel/cfg/linker.ld"
 fi
 
-if [ "$language" == "2" ]; then
-    project="${project}Native"
+if [ "$language" == "2" ]; thenx
+    project2="${project}Native"
 fi
 
 if [ "$build_system" == "1" ]; then
-    case $project in
+    case $project2 in
         "limine")
-            download_file "${MAKE_BASE_URL}/${project}Root.make" "GNUmakefile"
-            download_file "${MAKE_BASE_URL}/${project}Kernel.make" "kernel/GNUmakefile"
+            download_file "${MAKE_BASE_URL}/${project2}Root.make" "GNUmakefile"
+            download_file "${MAKE_BASE_URL}/${project2}Kernel.make" "kernel/GNUmakefile"
             download_file "${BASE_URL}/fstruct/limine.cfg" "kernel/cfg/limine.cfg"
             ;;
         "grub")
-            download_file "${MAKE_BASE_URL}/${project}Root.make" "GNUmakefile"
-            download_file "${MAKE_BASE_URL}/${project}Kernel.make" "kernel/GNUmakefile"
+            download_file "${MAKE_BASE_URL}/${project2}Root.make" "GNUmakefile"
+            download_file "${MAKE_BASE_URL}/${project2}Kernel.make" "kernel/GNUmakefile"
             download_file "${BASE_URL}/fstruct/grub.cfg" "kernel/cfg/grub.cfg"
             ;;
         "kernel")
-            download_file "${MAKE_BASE_URL}/${project}Root.make" "GNUmakefile"
-            download_file "${MAKE_BASE_URL}/${project}Kernel.make" "kernel/GNUmakefile"
+            download_file "${MAKE_BASE_URL}/${project2}Root.make" "GNUmakefile"
+            download_file "${MAKE_BASE_URL}/${project2}Kernel.make" "kernel/GNUmakefile"
             ;;
     esac
 fi
