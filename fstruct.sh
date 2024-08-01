@@ -39,14 +39,14 @@ case $project in
     *) echo "Invalid project type"; exit 1 ;;
 esac
 
-if [ "$language" == "2" ]; then
-    project="${project}Native"
-fi
-
 mkdir -p kernel/{src,inc,cfg}
 
 if [ "$use_linker" == "y" ]; then
     download_file "${LINKER_BASE_URL}/${project}-c++.ld" "kernel/cfg/linker.ld"
+fi
+
+if [ "$language" == "2" ]; then
+    project="${project}Native"
 fi
 
 if [ "$build_system" == "1" ]; then
