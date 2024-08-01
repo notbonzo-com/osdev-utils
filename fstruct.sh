@@ -22,8 +22,8 @@ echo "3. Kernel Only"
 read -p "Enter the number: " project
 
 echo "Select language:"
-echo "1. C"
-echo "2. C++"
+echo "1. C/C++ Cross Compiler"
+echo "2. C/C++ Native"
 read -p "Enter the number: " language
 
 read -p "Do you want to use a predefined linker.ld? (y/n): " use_linker
@@ -39,16 +39,14 @@ case $project in
     *) echo "Invalid project type"; exit 1 ;;
 esac
 
-case $language in
-    1) lang="c" ;;
-    2) lang="c++" ;;
-    *) echo "Invalid language"; exit 1 ;;
-esac
+if [ "$language" == "2" ]; then
+    project="${project}Native"
+fi
 
 mkdir -p kernel/{src,inc,cfg}
 
 if [ "$use_linker" == "y" ]; then
-    download_file "${LINKER_BASE_URL}/${project}-${lang}.ld" "kernel/cfg/linker.ld"
+    download_file "${LINKER_BASE_URL}/${project}-c++.ld" "kernel/cfg/linker.ld"
 fi
 
 if [ "$build_system" == "1" ]; then
