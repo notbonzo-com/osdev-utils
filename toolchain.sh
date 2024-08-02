@@ -14,11 +14,11 @@ echo ""
 ARCHITECTURE="x86_64-elf"
 INSTALL_DIR="$HOME/toolchain"
 SYMLINK="neither"
-BINUTILS_VERSION="${BINUTILS_VERSION:-2.42}"
-GCC_VERSION="${GCC_VERSION:-14.1.0}"
 
-BINUTILS_URL="https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz"
-GCC_URL="https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz"
+BINUTILS_VERSION_1="2.42"
+GCC_VERSION_1="14.1.0"
+BINUTILS_VERSION_2="2.37"
+GCC_VERSION_2="11.2.0"
 
 function install_packages() {
     if [ -f "/etc/os-release" ]; then
@@ -91,9 +91,6 @@ function install_packages() {
 }
 
 function check_requirements() {
-    # I dont know how to test for gmp-devel libmpc-devel mpfr-devel LMAO
-    # realpath should be installed always
-
     for cmd in curl tar make gcc realpath g++ bison flex nasm; do
         if ! command -v $cmd &> /dev/null; then
             echo "Error: Required command '$cmd' is not installed." >&2
@@ -135,19 +132,36 @@ function show_menu() {
     esac
 
     if [ "$SYMLINK" = "path" ]; then
-        # Detect the user's default shell
         DEFAULT_SHELL=$(basename "$SHELL")
         read -p "Detected shell is $DEFAULT_SHELL. Override if different (bash/zsh/fish) or press enter to accept: " input_shell
         USER_SHELL="${input_shell:-$DEFAULT_SHELL}"
     fi
     if [ "$SYMLINK" = "symlink" ]; then
-        # Symlinking to /bin will be done later no questions asked
         echo ""
     fi
+
+    echo "Please select version of the toolchains:"
+    echo "1) Binutils $BINUTILS_VERSION_1 and GCC $GCC_VERSION_1"
+    echo "2) Binutils $BINUTILS_VERSION_2 and GCC $GCC_VERSION_2"
+    read -p "Selection (1-2): " version_choice
+    case $version_choice in
+        1) 
+            BINUTILS_VERSION=$BINUTILS_VERSION_1
+            GCC_VERSION=$GCC_VERSION_1
+            ;;
+        2)
+            BINUTILS_VERSION=$BINUTILS_VERSION_2
+            GCC_VERSION=$GCC_VERSION_2
+            ;;
+        *)
+            echo "Invalid selection"; exit 0;;
+    esac
 
     echo "Configuration:"
     echo "Architecture: $ARCHITECTURE"
     echo "Installation Directory: $INSTALL_DIR"
+    echo "Binutils Version: $BINUTILS_VERSION"
+    echo "GCC Version: $GCC_VERSION"
     if [ "$SYMLINK" = "path" ]; then
         echo "Adding folder to path: Yes"
         echo "Shell: $USER_SHELL"
@@ -207,7 +221,6 @@ function install_toolchain() {
 
     cd "$TOOLCHAIN_PREFIX" || { echo "Failed to change directory to $TOOLCHAIN_PREFIX"; exit 0; }
 
-    # How many cores can be used in parallel?
     MAKEFLAGS="-j$(nproc)"
 
     function fetch() {
@@ -222,6 +235,9 @@ function install_toolchain() {
             exit 0
         fi
     }
+
+    BINUTILS_URL="https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz"
+    GCC_URL="https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz"
 
     fetch "$GCC_URL"
     fetch "$BINUTILS_URL"
@@ -272,8 +288,6 @@ function install_toolchain() {
     echo "Run $ARCHITECTURE-as for the GNU Assembler"
     echo "Run $ARCHITECTURE-g++ for the GNU C++ Compiler"
 }
-
-
 
 check_requirements
 show_menu
