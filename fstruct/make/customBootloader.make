@@ -3,7 +3,7 @@ override MAKEFLAGS += -rR
 ANSI_GREEN := \033[0;32m
 ANSI_RESET := \033[0m
 
-override KERNEL := kernel.elf
+override KERNEL := BOOTX64.ELF
 
 define DEFAULT_VAR =
     ifeq ($(origin $1),default)
@@ -14,13 +14,14 @@ define DEFAULT_VAR =
     endif
 endef
 
-override DEFAULT_CC := gcc
+# Assumes default location using my amazing toolchain.sh
+override DEFAULT_CC := ~/toolchain/x86_64-elf/bin/x86_64-elf-gcc
 $(eval $(call DEFAULT_VAR,CC,$(DEFAULT_CC)))
 
-override DEFAULT_LD := ld
+override DEFAULT_LD := ~/toolchain/x86_64-elf/bin/x86_64-elf-ld
 $(eval $(call DEFAULT_VAR,LD,$(DEFAULT_LD)))
 
-override DEFAULT_AS := as
+override DEFAULT_AS := ~/toolchain/x86_64-elf/bin/x86_64-elf-as
 $(eval $(call DEFAULT_VAR,AS,$(DEFAULT_AS)))
 
 override DEFAULT_CFLAGS := -g -O2 -pipe
@@ -32,7 +33,7 @@ $(eval $(call DEFAULT_VAR,CPPFLAGS,$(DEFAULT_CPPFLAGS)))
 override DEFAULT_CXXFLAGS := -g -O2 -pipe -std=c++17
 $(eval $(call DEFAULT_VAR,CXXFLAGS,$(DEFAULT_CXXFLAGS)))
 
-override DEFAULT_CXX := g++
+override DEFAULT_CXX := ~/toolchain/x86_64-elf/bin/x86_64-elf-g++
 $(eval $(call DEFAULT_VAR,CXX,$(DEFAULT_CXX)))
 
 override DEFAULT_NASMFLAGS := -F dwarf -g
@@ -41,10 +42,10 @@ $(eval $(call DEFAULT_VAR,NASMFLAGS,$(DEFAULT_NASMFLAGS)))
 override DEFAULT_LDFLAGS :=
 $(eval $(call DEFAULT_VAR,LDFLAGS,$(DEFAULT_LDFLAGS)))
 
+override DEFAULT_OBJCOPY := ~/toolchain/x86_64-elf/bin/x86_64-elf-objcopy
+$(eval $(call DEFAULT_VAR,OBJCOPY,$(DEFAULT_OBJCOPY)))
+
 override CFLAGS += \
-	-ffreestanding \
-	-nostdlib \
-	-nostartfiles \
     -Wall \
     -Wextra \
     -std=gnu11 \
@@ -67,9 +68,6 @@ override CFLAGS += \
     -Wno-trigraphs
 
 override CPPFLAGS := \
-	-ffreestanding \
-	-nostdlib \
-	-nostartfiles \
     -I . \
     -I ./cfg \
     -I ./cfg \
@@ -87,9 +85,6 @@ override CPPFLAGS := \
     -fno-rtti
 
 override LDFLAGS += \
-		-ffreestanding \
-		-nostdlib \
-		-nostartfiles \
         -T cfg/linker.ld \
         -ffreestanding \
         -O2 \
@@ -102,7 +97,6 @@ override NASMFLAGS += \
     -Wall \
     -f elf64
 
-# Yes I use the same makefile for C and C++, if you dont want c++ just dont add any .cpp files ¯\_(ツ)_/¯
 override CFILES := $(shell find -L * -type f -name '*.c')
 override ASFILES := $(shell find -L * -type f -name '*.S')
 override NASMFILES := $(shell find -L * -type f -name '*.asm')
@@ -114,25 +108,24 @@ override OBJ := $(addprefix ../build/obj/,$(CFILES:.c=.c.o) $(CXXFILES:.cpp=.cpp
 .PHONY: all
 all: ../build/$(KERNEL)
 
-cfg/limine.h:
-	curl -Lo $@ https://github.com/limine-bootloader/limine/raw/trunk/limine.h cfg/limine.h
-
 ../build/$(KERNEL): GNUmakefile cfg/linker.ld $(OBJ) $(LIBC_OBJS)
 	mkdir -p "$$(dirname $@)"
 	@echo "$(ANSI_GREEN)LINKING$(ANSI_RESET) $@"
 	@$(CC) $(OBJ) $(LIBC_OBJS) $(LDFLAGS) -o $@
+    @echo "$(ANSI_GREEN)OBJCOPY INTO A PE$(ANSI_RESET) $@"
+    @$(DEFAULT_OBJCOPY) -I elf64-x86-64 -O efi-app-x86_64 $@ ../build/BOOTX64.EFI
 
 -include $(HEADER_DEPS)
 
-../build/obj/%.c.o: %.c GNUmakefile cfg/limine.h
+../build/obj/%.c.o: %.c GNUmakefile
 	mkdir -p "$$(dirname $@)"
 	@echo "$(ANSI_GREEN)COMPILING$(ANSI_RESET) $<"
-	@$(CC) -DKLIBC=1 $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
-../build/obj/%.cpp.o: %.cpp GNUmakefile cfg/limine.h
+../build/obj/%.cpp.o: %.cpp GNUmakefile
 	mkdir -p "$$(dirname $@)"
 	@echo "$(ANSI_GREEN)COMPILING$(ANSI_RESET) $<"
-	@$(CXX) -DKLIBC=1 $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
 ../build/obj/%.S.o: %.S GNUmakefile
 	mkdir -p "$$(dirname $@)"
