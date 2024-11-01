@@ -254,6 +254,7 @@ function install_toolchain() {
     ../binutils-${BINUTILS_VERSION}/configure \
         --prefix="$TOOLCHAIN_PREFIX"              \
         --target=$ARCHITECTURE                    \
+        --enable-targets=x86_64-pe                \
         --with-sysroot                            \
         --disable-nls                             \
         --disable-werror && make $MAKEFLAGS && make install
