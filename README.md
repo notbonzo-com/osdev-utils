@@ -5,6 +5,8 @@ A collection of hand-made utilities that might be useful for both aspiring and n
 
 The `toolchain.sh` is a script that simplifies setting up the ELF-GCC toolchain for you. It supports both 32 and 64-bit versions.
 
+> TODO: Installer doesn't check if GIMP, MPFR and MPC are installed, fix that!
+
 **Quick install:**
 
     curl -L https://raw.githubusercontent.com/notbonzo-com/osdev-utils/main/toolchain.sh -o /tmp/toolchain.sh && chmod +x /tmp/toolchain.sh && /tmp/toolchain.sh
